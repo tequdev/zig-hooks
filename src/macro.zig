@@ -38,51 +38,21 @@ test "buffer_equals" {
 pub inline fn buffer_equals(comptime len: usize, buffer1: []const u8, buffer2: []const u8) bool {
     return switch (len) {
         20 => {
-            // compare u64 u64 u32
-            const a = @as(u64, @bitCast(buffer1[0..8].*));
-            const b = @as(u64, @bitCast(buffer2[0..8].*));
+            const a = @as(u160, @bitCast(buffer1[0..len].*));
+            const b = @as(u160, @bitCast(buffer2[0..len].*));
             if (a != b) return false;
-            const c = @as(u64, @bitCast(buffer1[8..16].*));
-            const d = @as(u64, @bitCast(buffer2[8..16].*));
-            if (c != d) return false;
-            const e = @as(u32, @bitCast(buffer1[16..20].*));
-            const f = @as(u32, @bitCast(buffer2[16..20].*));
-            if (e != f) return false;
             return true;
         },
         32 => {
-            // compare u64 u64 u64 u64
-            const a = @as(u64, @bitCast(buffer1[0..8].*));
-            const b = @as(u64, @bitCast(buffer2[0..8].*));
+            const a = @as(u256, @bitCast(buffer1[0..len].*));
+            const b = @as(u256, @bitCast(buffer2[0..len].*));
             if (a != b) return false;
-            const c = @as(u64, @bitCast(buffer1[8..16].*));
-            const d = @as(u64, @bitCast(buffer2[8..16].*));
-            if (c != d) return false;
-            const e = @as(u64, @bitCast(buffer1[16..24].*));
-            const f = @as(u64, @bitCast(buffer2[16..24].*));
-            if (e != f) return false;
-            const g = @as(u64, @bitCast(buffer1[24..32].*));
-            const h = @as(u64, @bitCast(buffer2[24..32].*));
-            if (g != h) return false;
             return true;
         },
         40 => {
-            // compare u64 u64 u64 u64 u64
-            const a = @as(u64, @bitCast(buffer1[0..8].*));
-            const b = @as(u64, @bitCast(buffer2[0..8].*));
+            const a = @as(u320, @bitCast(buffer1[0..len].*));
+            const b = @as(u320, @bitCast(buffer2[0..len].*));
             if (a != b) return false;
-            const c = @as(u64, @bitCast(buffer1[8..16].*));
-            const d = @as(u64, @bitCast(buffer2[8..16].*));
-            if (c != d) return false;
-            const e = @as(u64, @bitCast(buffer1[16..24].*));
-            const f = @as(u64, @bitCast(buffer2[16..24].*));
-            if (e != f) return false;
-            const g = @as(u64, @bitCast(buffer1[24..32].*));
-            const h = @as(u64, @bitCast(buffer2[24..32].*));
-            if (g != h) return false;
-            const i = @as(u64, @bitCast(buffer1[32..40].*));
-            const j = @as(u64, @bitCast(buffer2[32..40].*));
-            if (i != j) return false;
             return true;
         },
         else => {
