@@ -28,12 +28,12 @@ pub const KEYLET = enum(u32) {
 };
 
 pub const COMPARE = enum(u32) {
-    LESS = 1,
-    EQUAL = 2,
+    EQUAL = 1,
+    LESS = 2,
     GREATER = 4,
     LESS_EQUAL = 1 | 2,
-    GREATER_EQUAL = 2 | 4,
-    NOT_EQUAL = 1 | 4,
+    GREATER_EQUAL = 1 | 4,
+    NOT_EQUAL = 2 | 4,
 };
 
 pub const SFS_ACCOUNT = 20;

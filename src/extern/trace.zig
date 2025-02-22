@@ -9,10 +9,10 @@ pub inline fn trace(msg: []const u8, data: []const u8, isHex: enum(u32) {
     _ = c_trace(@intFromPtr(msg.ptr), msg.len, @intFromPtr(data.ptr), data.len, @intFromEnum(isHex));
 }
 
-pub fn trace_float(msg: []const u8, float1: i64) void {
+pub inline fn trace_float(msg: []const u8, float1: i64) void {
     _ = c_trace_float(@intFromPtr(msg.ptr), msg.len, float1);
 }
 
-pub fn trace_num(msg: []const u8, number: i64) void {
+pub inline fn trace_num(msg: []const u8, number: i64) void {
     _ = c_trace_num(@intFromPtr(msg.ptr), msg.len, number);
 }

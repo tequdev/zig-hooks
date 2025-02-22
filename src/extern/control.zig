@@ -3,7 +3,7 @@ const c_accept = @import("c/extern.zig").accept;
 const c_rollback = @import("c/extern.zig").rollback;
 
 pub inline fn _g(maxiter: u32) void {
-    _ = c_g(@src().line, maxiter + 1);
+    _ = c_g(@src().line, maxiter);
 }
 
 pub inline fn accept(msg: []const u8, error_code: i64) i64 {
