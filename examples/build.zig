@@ -2,23 +2,17 @@ const std = @import("std");
 
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{
-        .default_target = .{
-            .cpu_arch = .wasm32,
-            .os_tag = .freestanding,
-        },
+        .default_target = .{ .cpu_arch = .wasm32, .os_tag = .freestanding },
     });
 
     const zighooks = b.createModule(.{
-        .root_source_file = b.path("src/hookapi.zig"),
+        .root_source_file = b.path("../src/hookapi.zig"),
     });
 
     // examples
-    inline for ([_]struct {
-        name: []const u8,
-        src: []const u8,
-    }{
-        .{ .name = "root", .src = "examples/root.zig" },
-        .{ .name = "tests", .src = "examples/tests.zig" },
+    inline for ([_]struct { name: []const u8, src: []const u8 }{
+        .{ .name = "root", .src = "root.zig" },
+        .{ .name = "tests", .src = "tests.zig" },
     }) |excfg| {
         const ex_name = excfg.name;
         const ex_src = excfg.src;
@@ -37,11 +31,9 @@ pub fn build(b: *std.Build) void {
         example.rdynamic = true;
         example.import_memory = false;
 
-        const install = b.addInstallArtifact(example, .{
-            .dest_dir = .{
-                .override = .{ .custom = "." },
-            },
-        });
+        const install = b.addInstallArtifact(example, .{ .dest_dir = .{
+            .override = .{ .custom = "." },
+        } });
 
         b.getInstallStep().dependOn(&install.step);
 
@@ -66,11 +58,4 @@ pub fn build(b: *std.Build) void {
         wasm_process.step.dependOn(&hook_cleaner.step);
         b.getInstallStep().dependOn(&wasm_process.step);
     }
-
-    // const exe_tests = b.addTest(.{
-    //     .name = "zighooks-tests",
-    //     .root_source_file = b.path("src/tests.zig"),
-    // });
-
-    // b.getInstallStep().dependOn(&exe_tests.step);
 }

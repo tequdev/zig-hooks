@@ -12,11 +12,11 @@ pub const etxn_details = @import("./emit.zig").etxn_details;
 pub const etxn_fee_base = @import("./emit.zig").etxn_fee_base;
 pub const etxn_generation = @import("./emit.zig").etxn_generation;
 pub const etxn_nonce = @import("./emit.zig").etxn_nonce;
+pub const etxn_reserve = @import("./emit.zig").etxn_reserve;
 
 // float
 pub const float_compare = @import("./float.zig").float_compare;
 pub const float_divide = @import("./float.zig").float_divide;
-pub const float_exponent = @import("./float.zig").float_exponent;
 pub const float_int = @import("./float.zig").float_int;
 pub const float_invert = @import("./float.zig").float_invert;
 pub const float_log = @import("./float.zig").float_log;
@@ -59,10 +59,10 @@ pub const meta_slot = @import("./otxn.zig").meta_slot;
 
 // slot
 pub const slot = @import("./slot.zig").slot;
+pub const slot_set = @import("./slot.zig").slot_set;
 pub const slot_clear = @import("./slot.zig").slot_clear;
 pub const slot_count = @import("./slot.zig").slot_count;
 pub const slot_float = @import("./slot.zig").slot_float;
-pub const slot_id = @import("./slot.zig").slot_id;
 pub const slot_subarray = @import("./slot.zig").slot_subarray;
 pub const slot_subfield = @import("./slot.zig").slot_subfield;
 

@@ -1,6 +1,5 @@
 const c_float_compare = @import("c/extern.zig").float_compare;
 const c_float_divide = @import("c/extern.zig").float_divide;
-const c_float_exponent = @import("c/extern.zig").float_exponent;
 const c_float_int = @import("c/extern.zig").float_int;
 const c_float_invert = @import("c/extern.zig").float_invert;
 const c_float_log = @import("c/extern.zig").float_log;
@@ -17,22 +16,18 @@ const c_float_sto_set = @import("c/extern.zig").float_sto_set;
 const c_float_sum = @import("c/extern.zig").float_sum;
 
 pub fn float_compare(float1: i64, float2: i64, mode: enum(u32) {
-    LESS = 1,
-    EQUAL = 2,
+    EQUAL = 1,
+    LESS = 2,
     GREATER = 4,
     LESS_EQUAL = 1 | 2,
-    GREATER_EQUAL = 2 | 4,
-    NOT_EQUAL = 1 | 4,
+    GREATER_EQUAL = 1 | 4,
+    NOT_EQUAL = 2 | 4,
 }) i64 {
-    return c_float_compare(float1, float2, mode);
+    return c_float_compare(float1, float2, @intFromEnum(mode));
 }
 
 pub fn float_divide(float1: i64, float2: i64) i64 {
     return c_float_divide(float1, float2);
-}
-
-pub fn float_exponent(float1: i64) i64 {
-    return c_float_exponent(float1);
 }
 
 pub fn float_int(float1: i64, decimal_places: u32, abs: enum(u32) {
@@ -85,9 +80,9 @@ pub fn float_sign(float1: i64) i64 {
     return c_float_sign(float1);
 }
 
-// TODO
-pub fn float_sto(write_ptr: u32, write_len: u32, cread_ptr: u32, cread_len: u32, iread_ptr: u32, iread_len: u32, float1: i64, field_code: u32) i64 {
-    return c_float_sto(write_ptr, write_len, cread_ptr, cread_len, iread_ptr, iread_len, float1, field_code);
+const FieldCode = @import("../sfcode.zig").FieldCode;
+pub fn float_sto(buf_out: []const u8, currency: []const u8, issuer: []const u8, float: i64, field_code: FieldCode) i64 {
+    return c_float_sto(@intFromPtr(buf_out.ptr), buf_out.len, @intFromPtr(currency.ptr), currency.len, @intFromPtr(issuer.ptr), issuer.len, float, @intFromEnum(field_code));
 }
 
 pub fn float_sto_set(sto: []const u8) i64 {

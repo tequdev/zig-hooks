@@ -13,8 +13,8 @@ pub fn sto_erase(sto_out: []const u8, sto_in: []const u8, field_id: FieldCode) i
     return c_sto_erase(@intFromPtr(sto_out.ptr), sto_out.len, @intFromPtr(sto_in.ptr), sto_in.len, @intFromEnum(field_id));
 }
 
-pub fn sto_subarray(sto_out: []const u8, sto_in: []const u8, array_id: u32) i64 {
-    return c_sto_subarray(@intFromPtr(sto_out.ptr), sto_out.len, @intFromPtr(sto_in.ptr), sto_in.len, array_id);
+pub fn sto_subarray(sto: []const u8, array_id: u32) i64 {
+    return c_sto_subarray(@intFromPtr(sto.ptr), sto.len, array_id);
 }
 
 pub fn sto_subfield(sto_out: []const u8, field_id: FieldCode) i64 {

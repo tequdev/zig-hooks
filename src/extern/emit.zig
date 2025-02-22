@@ -25,3 +25,11 @@ pub fn etxn_fee_base(txn: []const u8) i64 {
 pub fn etxn_generation() i64 {
     return c_etxn_generation();
 }
+
+pub fn etxn_nonce(buf_out: []const u8) i64 {
+    return c_etxn_nonce(@intFromPtr(buf_out.ptr), buf_out.len);
+}
+
+pub fn etxn_reserve(count: u32) i64 {
+    return c_etxn_reserve(count);
+}

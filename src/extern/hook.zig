@@ -12,6 +12,10 @@ pub inline fn hook_account(hook_acc: []const u8) i64 {
     return c_hook_account(@intFromPtr(hook_acc.ptr), 20);
 }
 
+pub fn hook_again() i64 {
+    return c_hook_again();
+}
+
 pub fn hook_hash(buf_out: []const u8, hook_no: i32) i64 {
     return c_hook_hash(@intFromPtr(buf_out.ptr), buf_out.len, hook_no);
 }
