@@ -2,6 +2,9 @@
 pub const assert = @import("macro.zig").assert;
 pub const require = @import("macro.zig").require;
 
+// xfl
+pub const XFL = @import("xfl.zig").XFL;
+
 // buffer
 pub const buffer_equals = @import("buffer.zig").buffer_equals;
 pub const buf_from = @import("buffer.zig").buf_from;
