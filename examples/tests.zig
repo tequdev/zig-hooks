@@ -1,5 +1,5 @@
 const api = @import("zighooks").api;
-const macro = @import("zighooks").macro;
+const helpers = @import("zighooks").helpers;
 // const api = @import("../src/hookapi.zig").api;
 // const macro = @import("../src/hookapi.zig").macro;
 // control
@@ -83,9 +83,9 @@ const util_raddr = api.util_raddr;
 const util_sha512h = api.util_sha512h;
 const util_verify = api.util_verify;
 
-const buffer_equals = macro.buffer_equals;
+const buffer_equals = helpers.buffer_equals;
 
-const assert = macro.assert;
+const assert = helpers.assert;
 
 // zig fmt: off
 var sto = [_] u8{

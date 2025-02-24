@@ -1,10 +1,10 @@
-const float_sum = @import("extern/float.zig").float_sum;
-const float_negate = @import("extern/float.zig").float_negate;
-const float_multiply = @import("extern/float.zig").float_multiply;
-const float_divide = @import("extern/float.zig").float_divide;
-const rollback = @import("extern/control.zig").rollback;
-const hook_pos = @import("extern/hook.zig").hook_pos;
-const _g = @import("extern/c/extern.zig")._g;
+const float_sum = @import("../extern/float.zig").float_sum;
+const float_negate = @import("../extern/float.zig").float_negate;
+const float_multiply = @import("../extern/float.zig").float_multiply;
+const float_divide = @import("../extern/float.zig").float_divide;
+const rollback = @import("../extern/control.zig").rollback;
+
+const _g = @import("../extern/c/extern.zig")._g;
 
 pub inline fn assert(condition: bool, code: i64) void {
     if (!condition) _ = rollback("Assertion failed", code);

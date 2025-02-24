@@ -1,5 +1,5 @@
 const api = @import("zighooks").api;
-const macro = @import("zighooks").macro;
+const helpers = @import("zighooks").helpers;
 const _g = api._g;
 const accept = api.accept;
 const trace = api.trace;
@@ -7,10 +7,10 @@ const trace_num = api.trace_num;
 const hook_account = api.hook_account;
 const otxn_field = api.otxn_field;
 
-const buffer_equals = macro.buffer_equals;
+const buffer_equals = helpers.buffer_equals;
 
 export fn hook(_: i32) i64 {
-    _g(0);
+    _g(1);
 
     var hook_acc: [20]u8 = undefined;
     _ = hook_account(&hook_acc);

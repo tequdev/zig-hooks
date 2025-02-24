@@ -23,7 +23,7 @@ pub fn build(b: *std.Build) void {
         const ex_name = excfg.name;
         const ex_src = excfg.src;
 
-        std.debug.print("build the {s} example\n", .{ex_name});
+        // std.debug.print("build the {s} example\n", .{ex_name});
 
         var example = b.addExecutable(.{
             .name = ex_name,
@@ -39,38 +39,43 @@ pub fn build(b: *std.Build) void {
 
         const install = b.addInstallArtifact(example, .{
             .dest_dir = .{
-                .override = .{ .custom = "." },
+                .override = .{ .custom = "../examples/zig-out" },
             },
         });
 
-        b.getInstallStep().dependOn(&install.step);
+        const example_step = b.step(b.fmt("build examples/{s}", .{ex_name}), b.fmt("Build the {s} example", .{ex_name}));
+        example_step.dependOn(&install.step);
 
         // const wasm2wat = b.addSystemCommand(&.{
         //     "wasm2wat",
-        //     b.fmt("./zig-out/{s}.wasm", .{ex_name}),
+        //     b.fmt("examples/zig-out/{s}.wasm", .{ex_name}),
         // });
         // wasm2wat.step.dependOn(&install.step);
-        // b.getInstallStep().dependOn(&wasm2wat.step);
+        // example_step.dependOn(&wasm2wat.step);
 
         const hook_cleaner = b.addSystemCommand(&.{
             "hook-cleaner",
-            b.fmt("./zig-out/{s}.wasm", .{ex_name}),
+            b.fmt("examples/zig-out/{s}.wasm", .{ex_name}),
         });
         hook_cleaner.step.dependOn(&install.step);
-        b.getInstallStep().dependOn(&hook_cleaner.step);
+        example_step.dependOn(&hook_cleaner.step);
 
         const wasm_process = b.addSystemCommand(&.{
             "guard-checker",
-            b.fmt("./zig-out/{s}.wasm", .{ex_name}),
+            b.fmt("examples/zig-out/{s}.wasm", .{ex_name}),
         });
         wasm_process.step.dependOn(&hook_cleaner.step);
-        b.getInstallStep().dependOn(&wasm_process.step);
+        example_step.dependOn(&wasm_process.step);
+
+        b.getInstallStep().dependOn(example_step);
     }
 
-    // const exe_tests = b.addTest(.{
-    //     .name = "zighooks-tests",
-    //     .root_source_file = b.path("src/tests.zig"),
-    // });
-
-    // b.getInstallStep().dependOn(&exe_tests.step);
+    const exe_tests = b.addTest(.{
+        .name = "zighooks-tests",
+        .root_source_file = b.path("src/hookapi.zig"),
+        .optimize = .Debug,
+    });
+    const test_step = b.step("unit test", "Run the tests");
+    test_step.dependOn(&exe_tests.step);
+    b.getInstallStep().dependOn(test_step);
 }
