@@ -72,10 +72,10 @@ pub fn build(b: *std.Build) void {
 
     const exe_tests = b.addTest(.{
         .name = "zighooks-tests",
-        .root_source_file = b.path("src/hookapi.zig"),
+        .root_source_file = b.path("src/tests.zig"),
         .optimize = .Debug,
     });
-    const test_step = b.step("unit test", "Run the tests");
+    const test_step = b.step("test", "Run the tests");
     test_step.dependOn(&exe_tests.step);
     b.getInstallStep().dependOn(test_step);
 }

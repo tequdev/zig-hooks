@@ -1,7 +1,8 @@
 .{
-    .name = "zig-hooks",
+    .name = .zighooks,
     .version = "0.0.0",
-    .minimum_zig_version = "0.13.0",
+    .fingerprint = 0x95e4a1cbd887ee55,
+    .minimum_zig_version = "0.14.0",
     .dependencies = .{
         // See `zig fetch --save <url>` for a command-line interface for adding dependencies.
         //.example = .{
