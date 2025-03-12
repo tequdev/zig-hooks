@@ -13,6 +13,7 @@ pub fn build(b: *std.Build) void {
     inline for ([_]struct { name: []const u8, src: []const u8 }{
         .{ .name = "root", .src = "root.zig" },
         .{ .name = "tests", .src = "tests.zig" },
+        .{ .name = "state", .src = "state.zig" },
     }) |excfg| {
         const ex_name = excfg.name;
         const ex_src = excfg.src;
