@@ -46,6 +46,49 @@ pub inline fn anyToSlice(value: anytype) []const u8 {
     }
 }
 
+pub inline fn anyToMutSlice(value: anytype) []u8 {
+    const T = @TypeOf(value);
+    const type_info = @typeInfo(T);
+
+    // Branch processing based on type information at compile time
+    switch (type_info) {
+        // If it is already a u8 slice, return it as is
+        .pointer => |ptr_info| {
+            if (ptr_info.is_const) {
+                @compileError("Cannot convert const pointer to mutable slice");
+            }
+            if (ptr_info.size == .slice) {
+                const child = @typeInfo(ptr_info.child);
+                if (child == .int and child.int.bits == 8 and child.int.signedness == .unsigned) {
+                    return value;
+                }
+                // In case of other slice types, interpret it as a byte representation
+                return std.mem.sliceAsBytes(value);
+            } else if (ptr_info.size == .one) {
+                // In case of a single pointer, return the byte representation of the pointer itself
+                return std.mem.asBytes(value);
+            } else {
+                // In case of multi-level pointers, return the byte representation of the pointer itself
+                return std.mem.asBytes(value);
+            }
+        },
+        .@"struct" => {
+            if (type_info.@"struct".layout == .@"packed") {
+                return std.mem.asBytes(&value);
+            } else {
+                @compileError("only packed structs are supported");
+            }
+        },
+        .array => {
+            return std.mem.asBytes(&value);
+        },
+        .int, .float, .bool, .@"enum" => {
+            return std.mem.asBytes(&value);
+        },
+        else => @compileError("Unsupported type for anyToSlice: " ++ @typeName(T)),
+    }
+}
+
 pub inline fn sliceToAny(slice: []const u8, comptime T: type) T {
     switch (@typeInfo(T)) {
         .pointer => |ptr_info| {
