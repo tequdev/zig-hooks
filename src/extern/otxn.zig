@@ -1,5 +1,6 @@
 const c_otxn_burden = @import("c/extern.zig").otxn_burden;
 const c_otxn_field = @import("c/extern.zig").otxn_field;
+const c_otxn_param = @import("c/extern.zig").otxn_param;
 const c_otxn_generation = @import("c/extern.zig").otxn_generation;
 const c_otxn_id = @import("c/extern.zig").otxn_id;
 const c_otxn_slot = @import("c/extern.zig").otxn_slot;
@@ -13,6 +14,10 @@ pub inline fn otxn_burden() i64 {
 const FieldCode = @import("../sfcode.zig").FieldCode;
 pub inline fn otxn_field(buf_out: []u8, field_id: FieldCode) i64 {
     return c_otxn_field(@intFromPtr(buf_out.ptr), buf_out.len, @intFromEnum(field_id));
+}
+
+pub inline fn otxn_param(value: []u8, key: []const u8) i64 {
+    return c_otxn_param(@intFromPtr(value.ptr), value.len, @intFromPtr(key.ptr), 32);
 }
 
 pub inline fn otxn_generation() i64 {
