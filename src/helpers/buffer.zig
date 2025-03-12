@@ -108,7 +108,8 @@ pub inline fn buf_to(comptime T: anytype, value: *const [@sizeOf(T)]u8) T {
     }
 }
 
-pub inline fn flip_endian(comptime T: type, value: T) T {
+pub inline fn flip_endian(value: anytype) @TypeOf(value) {
+    const T = @TypeOf(value);
     switch (T) {
         u16 => {
             return (value & 0xFF) << 8 |
@@ -185,12 +186,15 @@ test "buf_to" {
 }
 
 test "flip_endian" {
-    const flipped_u16 = flip_endian(u16, 0x1234);
+    const u16_value = 0x1234;
+    const flipped_u16 = flip_endian(u16_value);
     try testing.expectEqual(flipped_u16, 0x3412);
 
-    const flipped_u32 = flip_endian(u32, 0x12345678);
+    const u32_value: u32 = 0x12345678;
+    const flipped_u32 = flip_endian(u32_value);
     try testing.expectEqual(flipped_u32, 0x78563412);
 
-    const flipped_u64 = flip_endian(u64, 0x1234567890abcdef);
+    const u64_value: u64 = 0x1234567890abcdef;
+    const flipped_u64 = flip_endian(u64_value);
     try testing.expectEqual(flipped_u64, 0xefcdab9078563412);
 }
