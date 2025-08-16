@@ -8,7 +8,7 @@ pub inline fn trace(msg: []const u8, data: anytype, isHex: enum(u32) {
     as_hex = 1,
     as_utf8 = 0,
 }) void {
-    const data_buf = anyToSlice(data);
+    const data_buf = anyToSlice(data)[0..];
     _ = c_trace(@intFromPtr(msg.ptr), msg.len, @intFromPtr(data_buf.ptr), data_buf.len, @intFromEnum(isHex));
 }
 

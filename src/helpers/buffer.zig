@@ -10,6 +10,15 @@ pub inline fn buf_to_drops(amount_buffer: *const [8]u8) i64 {
     return amount;
 }
 
+// TODO: add test
+pub inline fn drops_to_buf(out_buf: *[8]u8, amount: u64) void {
+    out_buf[0] = 0b01000000 + @as(u8, @truncate(((amount >> 56) & 0b00111111)));
+    out_buf[1] = @as(u8, @truncate((amount >> 48) & 0xff));
+    out_buf[2] = @as(u8, @truncate((amount >> 40) & 0xff));
+    out_buf[3] = @as(u8, @truncate((amount >> 32) & 0xff));
+    out_buf[4] = @as(u8, @truncate((amount >> 24) & 0xff));
+}
+
 pub inline fn buffer_equals(comptime len: usize, buffer1: *const [len]u8, buffer2: *const [len]u8) bool {
     return switch (len) {
         20 => {
@@ -45,27 +54,27 @@ pub inline fn buffer_equals(comptime len: usize, buffer1: *const [len]u8, buffer
 pub inline fn buf_from(comptime T: type, out_buf: *[@sizeOf(T)]u8, value: T) void {
     switch (T) {
         u8 => {
-            out_buf[0] = (value >> 0) & 0xff;
+            out_buf[0] = @as(u8, @truncate((value >> 0) & 0xff));
         },
         u16 => {
-            out_buf[0] = (value >> 8) & 0xff;
-            out_buf[1] = (value >> 0) & 0xff;
+            out_buf[0] = @as(u8, @truncate((value >> 8) & 0xff));
+            out_buf[1] = @as(u8, @truncate((value >> 0) & 0xff));
         },
         u32 => {
-            out_buf[0] = (value >> 24) & 0xff;
-            out_buf[1] = (value >> 16) & 0xff;
-            out_buf[2] = (value >> 8) & 0xff;
-            out_buf[3] = (value >> 0) & 0xff;
+            out_buf[0] = @as(u8, @truncate((value >> 24) & 0xff));
+            out_buf[1] = @as(u8, @truncate((value >> 16) & 0xff));
+            out_buf[2] = @as(u8, @truncate((value >> 8) & 0xff));
+            out_buf[3] = @as(u8, @truncate((value >> 0) & 0xff));
         },
         u64 => {
-            out_buf[0] = (value >> 56) & 0xff;
-            out_buf[1] = (value >> 48) & 0xff;
-            out_buf[2] = (value >> 40) & 0xff;
-            out_buf[3] = (value >> 32) & 0xff;
-            out_buf[4] = (value >> 24) & 0xff;
-            out_buf[5] = (value >> 16) & 0xff;
-            out_buf[6] = (value >> 8) & 0xff;
-            out_buf[7] = (value >> 0) & 0xff;
+            out_buf[0] = @as(u8, @truncate((value >> 56) & 0xff));
+            out_buf[1] = @as(u8, @truncate((value >> 48) & 0xff));
+            out_buf[2] = @as(u8, @truncate((value >> 40) & 0xff));
+            out_buf[3] = @as(u8, @truncate((value >> 32) & 0xff));
+            out_buf[4] = @as(u8, @truncate((value >> 24) & 0xff));
+            out_buf[5] = @as(u8, @truncate((value >> 16) & 0xff));
+            out_buf[6] = @as(u8, @truncate((value >> 8) & 0xff));
+            out_buf[7] = @as(u8, @truncate((value >> 0) & 0xff));
         },
         else => @compileError("Invalid value type"),
     }
@@ -186,7 +195,7 @@ test "buf_to" {
 }
 
 test "flip_endian" {
-    const u16_value = 0x1234;
+    const u16_value: u16 = 0x1234;
     const flipped_u16 = flip_endian(u16_value);
     try testing.expectEqual(flipped_u16, 0x3412);
 

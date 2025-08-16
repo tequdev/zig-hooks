@@ -9,6 +9,11 @@ const otxn_field = api.otxn_field;
 
 const buffer_equals = helpers.buffer_equals;
 
+export fn cbak(_: i32) i64 {
+    _g(1);
+    return accept("cbak", 0);
+}
+
 export fn hook(_: i32) i64 {
     _g(1);
 

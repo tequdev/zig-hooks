@@ -6,6 +6,8 @@ pub const require = @import("macro.zig").require;
 pub const XFL = @import("xfl.zig").XFL;
 
 // buffer
+pub const drops_to_buf = @import("buffer.zig").drops_to_buf;
+pub const buf_to_drops = @import("buffer.zig").buf_to_drops;
 pub const buffer_equals = @import("buffer.zig").buffer_equals;
 pub const buf_from = @import("buffer.zig").buf_from;
 pub const buf_to = @import("buffer.zig").buf_to;
@@ -34,6 +36,8 @@ pub const keylet_check = @import("keylets.zig").keylet_check;
 pub const keylet_escrow = @import("keylets.zig").keylet_escrow;
 pub const keylet_nft_offer = @import("keylets.zig").keylet_nft_offer;
 pub const keylet_paychan = @import("keylets.zig").keylet_paychan;
+
+pub const internal = @import("internal.zig");
 
 test {
     @import("std").testing.refAllDecls(@This());
