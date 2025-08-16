@@ -363,13 +363,15 @@ test "TransactionTemplate" {
         Destination: Field(.Destination) = Field(.Destination).init(.{
             .value = [_]u8{0x22} ** 20,
         }),
-        Amount: Field(.Amount) = Field(.Amount).init(.{
-            .value = [_]u8{0x33} ** 48,
+        Amount: Field(.Amount) = Field(.Amount).initNative(.{
+            .value = 0x12345678,
         }),
     };
     const txn = PaymentTxn{};
     try testing.expectEqual(txn.TransactionType.value, [_]u8{ 0x00, 0x00 });
     try testing.expectEqual(txn.Account.value, [_]u8{0x11} ** 20);
     try testing.expectEqual(txn.Destination.value, [_]u8{0x22} ** 20);
-    try testing.expectEqual(txn.Amount.value, [_]u8{0x33} ** 48);
+    try testing.expectEqualSlices(u8, txn.Amount.value[0..8], &[_]u8{ 0x40, 0x00, 0x00, 0x00, 0x12, 0x34, 0x56, 0x78 });
+    try testing.expectEqualSlices(u8, txn.Amount.value[8..28], &[_]u8{0x99} ** 20);
+    try testing.expectEqualSlices(u8, txn.Amount.value[28..48], &[_]u8{0x99} ** 20);
 }
