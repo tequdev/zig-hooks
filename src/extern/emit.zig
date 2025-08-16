@@ -8,8 +8,9 @@ const c_etxn_reserve = @import("c/extern.zig").etxn_reserve;
 
 const anyToSlice = @import("../helpers/internal.zig").anyToSlice;
 
-pub inline fn emit(hash_out: *[32]u8, txn: []const u8) i64 {
-    return c_emit(@intFromPtr(hash_out.ptr), hash_out.len, @intFromPtr(txn.ptr), txn.len);
+pub inline fn emit(hash_out: *[32]u8, txn: anytype) i64 {
+    const data_buf = anyToSlice(txn)[0..];
+    return c_emit(@intFromPtr(hash_out.ptr), hash_out.len, @intFromPtr(data_buf.ptr), data_buf.len);
 }
 
 pub inline fn etxn_burden() i64 {

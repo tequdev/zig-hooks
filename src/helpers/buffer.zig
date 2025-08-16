@@ -17,6 +17,29 @@ pub inline fn drops_to_buf(out_buf: *[8]u8, amount: u64) void {
     out_buf[2] = @as(u8, @truncate((amount >> 40) & 0xff));
     out_buf[3] = @as(u8, @truncate((amount >> 32) & 0xff));
     out_buf[4] = @as(u8, @truncate((amount >> 24) & 0xff));
+    out_buf[5] = @as(u8, @truncate((amount >> 16) & 0xff));
+    out_buf[6] = @as(u8, @truncate((amount >> 8) & 0xff));
+    out_buf[7] = @as(u8, @truncate((amount >> 0) & 0xff));
+}
+
+// TODO: add test
+pub inline fn iouamount_to_buf(out_buf: *[8]u8, mantissa: i64, exponent: u8) void {
+    const is_negative = mantissa < 0;
+    const abs_mantissa = if (is_negative) @as(u64, @bitCast(-mantissa)) else @as(u64, @bitCast(mantissa));
+
+    // first byte: 1bit(1) + 1bit(negative flag) + 6bit(exponent upper)
+    out_buf[0] = 0b10000000 | (if (is_negative) @as(u8, 0b01000000) else @as(u8, 0)) | @as(u8, @truncate((exponent >> 2) & 0b00111111));
+
+    // second byte: 2bit(exponent lower) + 6bit(mantissa upper)
+    out_buf[1] = @as(u8, @truncate(((exponent & 0b11) << 6) | ((abs_mantissa >> 48) & 0b00111111)));
+
+    // rest bytes: mantissa lower 48 bits
+    out_buf[2] = @as(u8, @truncate((abs_mantissa >> 40) & 0xff));
+    out_buf[3] = @as(u8, @truncate((abs_mantissa >> 32) & 0xff));
+    out_buf[4] = @as(u8, @truncate((abs_mantissa >> 24) & 0xff));
+    out_buf[5] = @as(u8, @truncate((abs_mantissa >> 16) & 0xff));
+    out_buf[6] = @as(u8, @truncate((abs_mantissa >> 8) & 0xff));
+    out_buf[7] = @as(u8, @truncate((abs_mantissa >> 0) & 0xff));
 }
 
 pub inline fn buffer_equals(comptime len: usize, buffer1: *const [len]u8, buffer2: *const [len]u8) bool {

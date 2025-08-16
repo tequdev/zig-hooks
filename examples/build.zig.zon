@@ -14,5 +14,6 @@
         "root.zig",
         "state.zig",
         "tests.zig",
+        "txn-template.zig",
     },
 }

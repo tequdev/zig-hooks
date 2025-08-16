@@ -20,6 +20,7 @@ pub fn build(b: *std.Build) void {
         .{ .name = "root", .src = "root.zig" },
         .{ .name = "state", .src = "state.zig" },
         .{ .name = "tests", .src = "tests.zig" },
+        .{ .name = "txn-template", .src = "txn-template.zig" },
     }) |excfg| {
         const ex_name = excfg.name;
         const ex_src = excfg.src;
