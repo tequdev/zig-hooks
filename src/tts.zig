@@ -1,4 +1,4 @@
-pub const TransactionType = enum(u32) {
+pub const TransactionType = enum(u16) {
     PAYMENT = 0,
     ESCROW_CREATE = 1,
     ESCROW_FINISH = 2,
