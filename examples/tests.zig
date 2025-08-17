@@ -1,7 +1,5 @@
 const api = @import("zighooks").api;
 const helpers = @import("zighooks").helpers;
-// const api = @import("../src/hookapi.zig").api;
-// const macro = @import("../src/hookapi.zig").macro;
 // control
 const _g = api._g;
 const accept = api.accept;
@@ -82,8 +80,6 @@ const util_keylet = api.util_keylet;
 const util_raddr = api.util_raddr;
 const util_sha512h = api.util_sha512h;
 const util_verify = api.util_verify;
-
-const buffer_equals = helpers.buffer_equals;
 
 const assert = helpers.assert;
 

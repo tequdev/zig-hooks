@@ -7,8 +7,6 @@ const trace_num = api.trace_num;
 const hook_account = api.hook_account;
 const otxn_field = api.otxn_field;
 
-const buffer_equals = helpers.buffer_equals;
-
 export fn cbak(_: i32) i64 {
     _g(1);
     return accept("cbak", 0);
@@ -25,7 +23,7 @@ export fn hook(_: i32) i64 {
     _ = otxn_field(&otxn_account, .Account);
     trace("Otxn Account", &otxn_account, .as_hex);
 
-    if (buffer_equals(20, &otxn_account, &hook_acc)) {
+    if (helpers.buffer_equals(20, &otxn_account, &hook_acc)) {
         return accept("Outgoing Hook!", 0);
     }
 

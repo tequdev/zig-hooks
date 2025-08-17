@@ -1,4 +1,3 @@
-const std = @import("std");
 const api = @import("zighooks").api;
 const helpers = @import("zighooks").helpers;
 const _g = api._g;
@@ -7,8 +6,6 @@ const trace = api.trace;
 const trace_num = api.trace_num;
 const state = api.state;
 const state_set = api.state_set;
-
-const buffer_equals = helpers.buffer_equals;
 
 const S = packed struct {
     a: u8,
