@@ -12,10 +12,20 @@ pub inline fn trace(msg: []const u8, data: anytype, isHex: enum(u32) {
     _ = c_trace(@intFromPtr(msg.ptr), msg.len, @intFromPtr(data_buf.ptr), data_buf.len, @intFromEnum(isHex));
 }
 
+pub inline fn trace_hex(msg: []const u8, data: []const u8) void {
+    trace(msg, data, .as_hex);
+}
+
 pub inline fn trace_float(msg: []const u8, float1: i64) void {
     _ = c_trace_float(@intFromPtr(msg.ptr), msg.len, float1);
 }
 
 pub inline fn trace_num(msg: []const u8, number: i64) void {
     _ = c_trace_num(@intFromPtr(msg.ptr), msg.len, number);
+}
+
+const ERROR = @import("../error.zig").ERROR;
+
+pub inline fn trace_error(msg: []const u8, err: ERROR) void {
+    _ = c_trace_num(@intFromPtr(msg.ptr), msg.len, @intFromEnum(err));
 }

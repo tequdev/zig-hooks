@@ -65,6 +65,7 @@ pub const slot_count = @import("./slot.zig").slot_count;
 pub const slot_float = @import("./slot.zig").slot_float;
 pub const slot_subarray = @import("./slot.zig").slot_subarray;
 pub const slot_subfield = @import("./slot.zig").slot_subfield;
+pub const slot_type = @import("./slot.zig").slot_type;
 
 // state
 pub const state = @import("./state.zig").state;
@@ -81,8 +82,10 @@ pub const sto_validate = @import("./sto.zig").sto_validate;
 
 // trace
 pub const trace = @import("./trace.zig").trace;
+pub const trace_hex = @import("./trace.zig").trace_hex;
 pub const trace_float = @import("./trace.zig").trace_float;
 pub const trace_num = @import("./trace.zig").trace_num;
+pub const trace_error = @import("./trace.zig").trace_error;
 
 // utilities
 pub const util_accid = @import("./utilities.zig").util_accid;

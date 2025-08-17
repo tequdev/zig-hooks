@@ -48,7 +48,7 @@ export fn hook(_: i32) i64 {
     trace("autofilled txn", &txn, .as_hex);
 
     var hash: [32]u8 = undefined;
-    if (emit(&hash, &txn) != 32) {
+    if (emit(&hash, &txn) != .SUCCESS) {
         return rollback("Emit failed!", 0);
     }
     trace("emit hash", &hash, .as_hex);

@@ -85,7 +85,7 @@ pub inline fn autofill(txn_ptr: anytype) void {
     // EmitDetails
     _ = api.etxn_details(txn_ptr.EmitDetails[0..]);
     // Fee
-    helpers.drops_to_buf(txn_ptr.Fee.value[0..], @intCast(api.etxn_fee_base(txn_ptr)));
+    helpers.drops_to_buf(txn_ptr.Fee.value[0..], api.etxn_fee_base(txn_ptr).fee);
 }
 
 // Common functions and types
@@ -141,6 +141,22 @@ fn FieldUint16(comptime sfcode: FieldCode) type {
         pub fn init(comptime args: struct { value: u16 = undefined }) Self {
             var result = Self{};
             result.value = anyToSliceComptime(args.value);
+            return result;
+        }
+    };
+}
+
+pub fn FieldTransactionType() type {
+    return struct {
+        const Self = @This();
+        usingnamespace FieldCommon(.TransactionType);
+
+        field: [calculateFieldIdLength(.TransactionType)]u8 = calculateFieldIDValue(.TransactionType),
+        value: [2]u8 = undefined,
+
+        pub fn init(comptime args: struct { value: TransactionType }) Self {
+            var result = Self{};
+            result.value = anyToSliceComptime(helpers.flip_endian(@intFromEnum(args.value)));
             return result;
         }
     };
@@ -310,19 +326,7 @@ pub fn Field(sfcode: FieldCode) type {
 
     // Special handling for TransactionType
     if (sfcode == .TransactionType) {
-        return struct {
-            const Self = @This();
-            usingnamespace FieldCommon(sfcode);
-
-            field: [calculateFieldIdLength(sfcode)]u8 = calculateFieldIDValue(sfcode),
-            value: [2]u8 = undefined,
-
-            pub fn init(comptime args: struct { value: TransactionType }) Self {
-                var result = Self{};
-                result.value = anyToSliceComptime(@intFromEnum(args.value));
-                return result;
-            }
-        };
+        return FieldTransactionType();
     }
 
     // Return appropriate struct based on SerializedType

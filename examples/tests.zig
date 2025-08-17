@@ -58,9 +58,9 @@ const slot_set = api.slot_set;
 const slot_clear = api.slot_clear;
 const slot_count = api.slot_count;
 const slot_float = api.slot_float;
-const slot_id = api.slot_id;
 const slot_subarray = api.slot_subarray;
 const slot_subfield = api.slot_subfield;
+const slot_type = api.slot_type;
 // state
 const state = api.state;
 const state_foreign = api.state_foreign;
@@ -86,6 +86,23 @@ const util_verify = api.util_verify;
 const buffer_equals = helpers.buffer_equals;
 
 const assert = helpers.assert;
+
+const Field = helpers.Field;
+const FieldTransactionType = helpers.FieldTransactionType;
+
+const AccountSetTxn = struct {
+    TransactionType: FieldTransactionType() = FieldTransactionType().init(.{
+        .value = .ACCOUNT_SET,
+    }),
+    Account: Field(.Account) = Field(.Account).init(.{}),
+    Fee: Field(.Fee) = Field(.Fee).init(.{}),
+    SigningPubKey: Field(.SigningPubKey) = Field(.SigningPubKey).init(.{}),
+    Sequence: Field(.Sequence) = Field(.Sequence).init(.{}),
+    LastLedgerSequence: Field(.LastLedgerSequence) = Field(.LastLedgerSequence).init(.{}),
+    FirstLedgerSequence: Field(.FirstLedgerSequence) = Field(.FirstLedgerSequence).init(.{}),
+    EmitDetails: [helpers.EmitDetailsSize]u8 = undefined,
+};
+var txn = AccountSetTxn{};
 
 // zig fmt: off
 var sto = [_] u8{
@@ -125,103 +142,122 @@ const pubkey_ed = [_] u8{
 export fn hook(hook_arg: i32) i64 {
     var hook_acc: [20]u8 = undefined;
     _ = hook_account(&hook_acc);
+    _ = hook_account(&txn.Account.value);
     const currency = [3]u8{ 'U', 'S', 'D' };
     // control
-    _g(0);
-    // etxn
+    _g(1);
     var buf: [32]u8 = undefined;
     var buf2: [200]u8 = undefined;
-    assert(etxn_reserve(1) > 0, 1);
-    assert(etxn_burden() > 0, 2);
-    assert(etxn_details(buf2[0..138]) > 0, 3);
-    assert(etxn_fee_base(&currency) < 0, 4);
-    assert(etxn_generation() > 0, 5);
-    assert(etxn_nonce(&buf) > 0, 6);
-    // float
-    assert(float_one() == 6089866696204910592, 7);
-    const one = float_one();
-    assert(float_compare(one, one, .EQUAL) == 1, 8);
-    assert(float_divide(one, one) == one, 9);
-    assert(float_int(one, 0, .default) == 1, 10);
-    assert(float_invert(one) == one, 11);
-    assert(float_log(one) == 0, 12);
-    assert(float_mantissa(one) == 1000000000000000, 13);
-    assert(float_mulratio(one, .none, 1, 1) == one, 14);
-    assert(float_multiply(one, one) == one, 15);
-    assert(float_negate(float_negate(one)) == one, 16);
-    assert(float_root(one, 2) == one, 17);
-    assert(float_set(0, 0) == 0, 18);
-    assert(float_sign(one) == 0, 19);
-    assert(float_sto(buf2[0..50], &currency, &hook_acc, 0, .Amount) == 49, 20);
-    assert(float_sto_set(buf2[0..50]) == 0, 21);
-    assert(float_sum(float_sum(one, one), float_negate(one)) == one, 22);
-    // hook
-    assert(hook_account(&hook_acc) == 20, 23);
-    if (hook_arg == 0) {
-        assert(hook_again() == 1, 24);
-    } else {
-        assert(hook_again() == -9, 24);
-    }
-    assert(hook_hash(&buf, 0) == 32, 25);
-    assert(hook_param(&hook_acc, &buf) == -5, 26);
-    assert(hook_param_set(&hook_acc, &buf, &buf) == 20, 27);
-    assert(hook_pos() == 0, 28);
-    assert(hook_skip(&buf, .add) == 1, 29);
     // ledger
-    assert(ledger_keylet(buf2[0..34], buf2[0..34], buf2[0..34]) == -5, 30);
-    assert(ledger_last_hash(&buf) == 32, 31);
-    assert(ledger_last_time() > 0, 32);
-    assert(ledger_nonce(&buf) > 0, 33);
-    assert(ledger_seq() > 0, 34);
+    assert(ledger_keylet(buf2[0..34], buf2[0..34], buf2[0..34]) == .DOESNT_EXIST, 1);
+    assert(ledger_last_hash(&buf) == .SUCCESS, 2);
+    assert(ledger_last_time() > 0, 3);
+    assert(ledger_nonce(&buf) == .SUCCESS, 4);
+    const seq = ledger_seq();
+    assert(seq > 0, 5);
+    // etxn
+    assert(etxn_reserve(1) == .SUCCESS, 11);
+    assert(etxn_burden().err == .SUCCESS, 12);
+    assert(etxn_details(buf2[0..138]) == .SUCCESS, 13);
+    assert(etxn_generation().err == .SUCCESS, 14);
+    assert(etxn_nonce(&buf) == .SUCCESS, 15);
+    helpers.autofill(&txn);
+    assert(etxn_fee_base(&txn).err == .SUCCESS, 16);
+    // float
+    assert(float_one() == 6089866696204910592, 21);
+    const one = float_one();
+    assert(float_compare(one, one, .EQUAL) == 1, 22);
+    assert(float_divide(one, one) == one, 23);
+    assert(float_int(one, 0, .default) == 1, 24);
+    assert(float_invert(one) == one, 25);
+    assert(float_log(one) == 0, 26);
+    assert(float_mantissa(one) == 1000000000000000, 27);
+    assert(float_mulratio(one, .none, 1, 1) == one, 28);
+    assert(float_multiply(one, one) == one, 29);
+    assert(float_negate(float_negate(one)) == one, 30);
+    assert(float_root(one, 2) == one, 31);
+    assert(float_set(0, 0) == 0, 32);
+    assert(float_sign(one) == 0, 33);
+    assert(float_sto(buf2[0..50], &currency, &hook_acc, 0, .Amount) == 49, 34);
+    assert(float_sto_set(buf2[0..50]) == 0, 35);
+    assert(float_sum(float_sum(one, one), float_negate(one)) == one, 36);
+    // hook
+    assert(hook_account(&hook_acc) == .SUCCESS, 41);
+    if (hook_arg == 0) {
+        assert(hook_again() == .SUCCESS, 42);
+    } else {
+        assert(hook_again() == .PREREQUISITE_NOT_MET, 43);
+    }
+    assert(hook_hash(&buf, 0) == .SUCCESS, 44);
+    assert(hook_param(&hook_acc, &buf) == .DOESNT_EXIST, 45);
+    assert(hook_param_set(&hook_acc, &buf, &buf) == .SUCCESS, 46);
+    assert(hook_pos() == 0, 47);
+    assert(hook_skip(&buf, .add) == .SUCCESS, 48);
     // otxn
-    assert(otxn_burden() > 0, 35);
-    assert(otxn_generation() == 0, 36);
-    assert(otxn_id(&buf, .originatingTxn) == 32, 37);
-    assert(otxn_slot(1) == 1, 38);
+    assert(otxn_burden().burden > 0, 51);
+    assert(otxn_generation() == 0, 52);
+    assert(otxn_id(&buf, .originatingTxn) == .SUCCESS, 53);
+    assert(otxn_slot(1).slot == 1, 54);
     if (hook_arg > 0) {
-        assert(meta_slot(255) > 0, 39);
+        assert(meta_slot(255).slot > 0, 55);
     }
     // slot
     var keylet_buf: [34]u8 = undefined;
-    _ = util_keylet(&keylet_buf, .AMENDMENTS, 0, 0, 0, 0, 0, 0);
-    assert(slot_set(&keylet_buf, 2) > 0, 41);
-    assert(slot_subfield(1, .Account, 2) > 0, 40);
-    assert(slot(&buf2, 1) > 0, 42);
-    assert(slot_clear(1) == 1, 43);
-    assert(slot_count(1) == -5, 44);
-    assert(slot_float(1) == -5, 44);
-    assert(slot_subarray(1, 0, 1) == -5, 45);
+    _ = helpers.keylet_hook(&keylet_buf, &hook_acc);
+    assert(slot_set(&keylet_buf, 2).slot_into > 0, 61);
+    assert(slot_set(&keylet_buf, 200).slot_into > 0, 62);
+    assert(slot_subfield(1, .Account, 111).slot_into > 0, 63);
+    var buf3: [10240]u8 = undefined;
+    assert(slot(&buf3, 2).len > 0, 64);
+    assert(slot_subfield(2, .Hooks, 3).err == .SUCCESS, 65);
+    assert(slot_subarray(3, 0, 4).err == .SUCCESS, 66);
+    assert(slot_count(3).count > 0, 67);
+    assert(slot_clear(3) == .SUCCESS, 68);
+    assert(slot_float(3).err == .DOESNT_EXIST, 69);
+    {
+        var keylet_acc: [34]u8 = undefined;
+        _ = helpers.keylet_account(&keylet_acc, &hook_acc);
+        assert(slot_set(&keylet_acc, 40).slot_into > 0, 70);
+        assert(slot_subfield(40, .Account, 41).slot_into > 0, 71);
+        assert(slot_subfield(40, .Balance, 42).slot_into > 0, 72);
+        assert(slot_type(41, .fieldCode).field_code == .Account, 73);
+        assert(slot_type(42, .isNativeAmount).isNative == true, 74);
+    }
     // state
-    assert(state(&hook_acc, &buf) == -5, 46);
-    assert(state_foreign(&hook_acc, &buf, null, null) == -5, 47);
-    assert(state_foreign_set(&hook_acc, &buf, null, null) > 0, 48);
-    assert(state_set(&hook_acc, &buf) > 0, 49);
+    assert(state_foreign_set(&hook_acc, &buf, null, null) == .SUCCESS, 81);
+    assert(state_set(&hook_acc, &buf) == .SUCCESS, 82);
+    assert(state(&hook_acc, &buf).err == .SUCCESS, 83);
+    assert(state_foreign(&hook_acc, &buf, null, null).err == .SUCCESS, 84);
     // sto
-    var buf3: [1024]u8 = undefined;
-    var txn_buf: [1024]u8 = undefined;
-    assert(sto_emplace(&buf3, &sto, &ins, .LedgerIndex) > 0, 50);
+    var buf4: [4096]u8 = undefined;
+    var txn_buf: [4096]u8 = undefined;
+    assert(sto_emplace(&buf4, &sto, &ins, .LedgerIndex) == .SUCCESS, 91);
     _ = otxn_slot(1);
-    const txn_buf_len: usize = @intCast(slot(&txn_buf, 1));
-    assert(sto_erase(&buf2, txn_buf[0..txn_buf_len], .Sequence) > 0, 51);
-    assert(sto_subfield(txn_buf[0..txn_buf_len], .Account) > 0, 52);
-    assert(sto_validate(txn_buf[0..txn_buf_len]) > 0, 53);
+    const txn_buf_len: usize = @intCast(slot(&txn_buf, 1).len);
+    assert(sto_erase(&buf4, txn_buf[0..txn_buf_len], .Sequence) == .SUCCESS, 92);
+    var subfield_result = sto_subfield(txn_buf[0..txn_buf_len], .Account);
+    assert(subfield_result.err == .SUCCESS, 93);
+    assert(subfield_result.subfield.len > 0, 94);
+    assert(sto_validate(txn_buf[0..txn_buf_len]).valid == true, 95);
     _ = slot_set(&keylet_buf, 1);
-    var amendments: [2048]u8 = undefined;
-    const amendments_len = slot(&amendments, 1);
-    const lookup = sto_subfield(amendments[0..@intCast(amendments_len)], .Amendments);
-    assert(sto_subarray(amendments[@intCast(lookup >> 32)..@intCast(lookup & 0xFFFFFFFF)], 0) > 0, 54);
+    var hooks: [2048]u8 = undefined;
+    const hooks_len = slot(&hooks, 200).len;
+    subfield_result = sto_subfield(hooks[0..@intCast(hooks_len)], .Hooks);
+    const subarray_result = sto_subarray(subfield_result.subfield, 0);
+    assert(subarray_result.err == .SUCCESS, 96);
+    assert(subarray_result.subarray.len > 0, 97);
     // trace
     trace("ABC", "DEF", .as_utf8);
     trace_num("ABC", 123);
     trace_float("ABC", float_one());
     // utilities
     var raddr: [34]u8 = undefined;
-    assert(util_raddr(&raddr, &hook_acc) > 0, 55);
-    assert(util_accid(&hook_acc, &raddr) > 0, 56);
+    assert(util_raddr(&raddr, &hook_acc) == .SUCCESS, 101);
+    assert(util_accid(&hook_acc, &raddr) == .SUCCESS, 102);
     keylet_buf = undefined;
-    assert(util_keylet(&keylet_buf, .AMENDMENTS, 0, 0, 0, 0, 0, 0) > 0, 57);
-    assert(util_sha512h(&buf, &hook_acc) > 0, 58);
-    assert(util_verify(&msg, &sig_ed, &pubkey_ed) == 1, 59);
+    assert(util_keylet(&keylet_buf, .AMENDMENTS, 0, 0, 0, 0, 0, 0) == .SUCCESS, 103);
+    assert(util_sha512h(&buf, &hook_acc) == .SUCCESS, 104);
+    assert(util_verify(&msg, &sig_ed, &pubkey_ed).valid == true, 105);
 
     // _ = rollback("Hello, World!", 0);
     return accept("Incoming Hook!", 0);

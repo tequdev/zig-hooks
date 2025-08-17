@@ -5,14 +5,19 @@ const c_state_set = @import("c/extern.zig").state_set;
 
 const anyToSlice = @import("../helpers/internal.zig").anyToSlice;
 
-pub inline fn state(buf_out: anytype, key: []const u8) i64 {
+const ERROR = @import("../error.zig").ERROR;
+
+pub inline fn state(buf_out: anytype, key: []const u8) struct { len: u32, err: ERROR } {
     const buf_out_buf = anyToSlice(buf_out);
-    return c_state(@intFromPtr(buf_out_buf.ptr), buf_out_buf.len, @intFromPtr(key.ptr), 32);
+    const len = c_state(@intFromPtr(buf_out_buf.ptr), buf_out_buf.len, @intFromPtr(key.ptr), 32);
+    if (len < 0)
+        return .{ .len = 0, .err = @enumFromInt(len) };
+    return .{ .len = @intCast(len), .err = .SUCCESS };
 }
 
-pub inline fn state_foreign(buf_out: anytype, key: []const u8, namespace: ?*const [32]u8, account: ?*const [20]u8) i64 {
+pub inline fn state_foreign(buf_out: anytype, key: []const u8, namespace: ?*const [32]u8, account: ?*const [20]u8) struct { len: u32, err: ERROR } {
     const buf_out_buf = anyToSlice(buf_out);
-    return c_state_foreign(
+    const len = c_state_foreign(
         @intFromPtr(buf_out_buf.ptr),
         buf_out_buf.len,
         @intFromPtr(key.ptr),
@@ -22,11 +27,14 @@ pub inline fn state_foreign(buf_out: anytype, key: []const u8, namespace: ?*cons
         if (account != null) @intFromPtr(account.?.ptr) else 0,
         if (account != null) account.?.len else 0,
     );
+    if (len < 0)
+        return .{ .len = 0, .err = @enumFromInt(len) };
+    return .{ .len = @intCast(len), .err = .SUCCESS };
 }
 
-pub inline fn state_foreign_set(value: anytype, key: []const u8, namespace: ?*const [32]u8, account: ?*const [20]u8) i64 {
+pub inline fn state_foreign_set(value: anytype, key: []const u8, namespace: ?*const [32]u8, account: ?*const [20]u8) ERROR {
     const value_buf = anyToSlice(value);
-    return c_state_foreign_set(
+    const len = c_state_foreign_set(
         @intFromPtr(value_buf.ptr),
         value_buf.len,
         @intFromPtr(key.ptr),
@@ -36,9 +44,15 @@ pub inline fn state_foreign_set(value: anytype, key: []const u8, namespace: ?*co
         if (account != null) @intFromPtr(account.?.ptr) else 0,
         if (account != null) account.?.len else 0,
     );
+    if (len < 0)
+        return @enumFromInt(len);
+    return .SUCCESS;
 }
 
-pub inline fn state_set(value: anytype, key: []const u8) i64 {
+pub inline fn state_set(value: anytype, key: []const u8) ERROR {
     const value_buf = anyToSlice(value);
-    return c_state_set(@intFromPtr(value_buf.ptr), value_buf.len, @intFromPtr(key.ptr), 32);
+    const len = c_state_set(@intFromPtr(value_buf.ptr), value_buf.len, @intFromPtr(key.ptr), 32);
+    if (len < 0)
+        return @enumFromInt(len);
+    return .SUCCESS;
 }
