@@ -7,10 +7,11 @@ pub inline fn buf_to_drops(amount_buffer: *const [8]u8) i64 {
     amount += @as(i64, amount_buffer[3]) << 32;
     amount += @as(i64, amount_buffer[4]) << 24;
     amount += @as(i64, amount_buffer[5]) << 16;
+    amount += @as(i64, amount_buffer[6]) << 8;
+    amount += @as(i64, amount_buffer[7]) << 0;
     return amount;
 }
 
-// TODO: add test
 pub inline fn drops_to_buf(out_buf: *[8]u8, amount: u64) void {
     out_buf[0] = 0b01000000 + @as(u8, @truncate(((amount >> 56) & 0b00111111)));
     out_buf[1] = @as(u8, @truncate((amount >> 48) & 0xff));
@@ -175,8 +176,19 @@ test "buf_to_drops" {
     try testing.expectEqual(buf_to_drops(&buffer), -2);
 
     buffer[0] = 0x80;
-    std.log.debug("buf_to_drops: {d}", .{buf_to_drops(&buffer)});
     try testing.expectEqual(buf_to_drops(&buffer), 0);
+
+    buffer[7] = 0x01;
+    try testing.expectEqual(buf_to_drops(&buffer), 1);
+}
+
+test "drops_to_buf" {
+    var buffer = [_]u8{0} ** 8;
+    drops_to_buf(&buffer, 0);
+    try testing.expectEqualSlices(u8, &buffer, &[_]u8{ 0b01000000, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 });
+
+    drops_to_buf(&buffer, 1);
+    try testing.expectEqualSlices(u8, &buffer, &[_]u8{ 0b01000000, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01 });
 }
 
 test "buffer_equals" {
