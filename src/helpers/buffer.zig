@@ -43,36 +43,18 @@ pub inline fn iouamount_to_buf(out_buf: *[8]u8, mantissa: i64, exponent: u8) voi
     out_buf[7] = @as(u8, @truncate((abs_mantissa >> 0) & 0xff));
 }
 
+fn UIntType(comptime bits: u16) type {
+    return @Type(.{ .int = .{
+        .signedness = .unsigned,
+        .bits = bits,
+    } });
+}
+
 pub inline fn buffer_equals(comptime len: usize, buffer1: *const [len]u8, buffer2: *const [len]u8) bool {
-    return switch (len) {
-        20 => {
-            const a = @as(u160, @bitCast(buffer1[0..len].*));
-            const b = @as(u160, @bitCast(buffer2[0..len].*));
-            if (a != b) return false;
-            return true;
-        },
-        32 => {
-            const a = @as(u256, @bitCast(buffer1[0..len].*));
-            const b = @as(u256, @bitCast(buffer2[0..len].*));
-            if (a != b) return false;
-            return true;
-        },
-        40 => {
-            const a = @as(u320, @bitCast(buffer1[0..len].*));
-            const b = @as(u320, @bitCast(buffer2[0..len].*));
-            if (a != b) return false;
-            return true;
-        },
-        64 => {
-            const a = @as(u512, @bitCast(buffer1[0..len].*));
-            const b = @as(u512, @bitCast(buffer2[0..len].*));
-            if (a != b) return false;
-            return true;
-        },
-        else => {
-            @compileError("Invalid buffer length");
-        },
-    };
+    const a = @as(UIntType(len * 8), @bitCast(buffer1[0..len].*));
+    const b = @as(UIntType(len * 8), @bitCast(buffer2[0..len].*));
+    if (a != b) return false;
+    return true;
 }
 
 pub inline fn buf_from(comptime T: type, out_buf: *[@sizeOf(T)]u8, value: T) void {

@@ -49,11 +49,12 @@ pub const ledger_nonce = @import("./ledger.zig").ledger_nonce;
 pub const ledger_seq = @import("./ledger.zig").ledger_seq;
 
 // otxn
-pub const otxn_param = @import("./hook.zig").otxn_param;
+pub const otxn_param = @import("./otxn.zig").otxn_param;
 pub const otxn_burden = @import("./otxn.zig").otxn_burden;
 pub const otxn_field = @import("./otxn.zig").otxn_field;
 pub const otxn_generation = @import("./otxn.zig").otxn_generation;
 pub const otxn_id = @import("./otxn.zig").otxn_id;
+pub const otxn_type = @import("./otxn.zig").otxn_type;
 pub const otxn_slot = @import("./otxn.zig").otxn_slot;
 pub const meta_slot = @import("./otxn.zig").meta_slot;
 

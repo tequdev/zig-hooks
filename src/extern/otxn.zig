@@ -17,18 +17,21 @@ pub inline fn otxn_burden() struct { burden: u64, err: ERROR } {
 }
 
 const FieldCode = @import("../sfcode.zig").FieldCode;
-pub inline fn otxn_field(buf_out: []u8, field_id: FieldCode) ERROR {
+pub inline fn otxn_field(buf_out: []u8, field_id: FieldCode) struct { len: i32, err: ERROR } {
     const len = c_otxn_field(@intFromPtr(buf_out.ptr), buf_out.len, @intFromEnum(field_id));
     if (len < 0)
-        return @enumFromInt(len);
-    return .SUCCESS;
+        return .{ .len = 0, .err = @enumFromInt(len) };
+    return .{ .len = @intCast(len), .err = .SUCCESS };
 }
 
-pub inline fn otxn_param(value: []u8, key: []const u8) ERROR {
-    const len = c_otxn_param(@intFromPtr(value.ptr), value.len, @intFromPtr(key.ptr), 32);
+const anyToSlice = @import("../helpers/internal.zig").anyToSlice;
+
+pub inline fn otxn_param(value: anytype, key: []const u8) struct { len: i32, err: ERROR } {
+    const value_buf = anyToSlice(value);
+    const len = c_otxn_param(@intFromPtr(value_buf.ptr), value_buf.len, @intFromPtr(key.ptr), key.len);
     if (len < 0)
-        return @enumFromInt(len);
-    return .SUCCESS;
+        return .{ .len = 0, .err = @enumFromInt(len) };
+    return .{ .len = @intCast(len), .err = .SUCCESS };
 }
 
 pub inline fn otxn_generation() u32 {
@@ -40,6 +43,13 @@ pub inline fn otxn_id(buf_out: *[32]u8, flags: enum(u32) { originatingTxn = 0, e
     if (len < 0)
         return @enumFromInt(len);
     return .SUCCESS;
+}
+
+const TransactionType = @import("../tts.zig").TransactionType;
+
+pub inline fn otxn_type() TransactionType {
+    const tt = c_otxn_type();
+    return @enumFromInt(tt);
 }
 
 pub inline fn otxn_slot(slot_no: u32) struct { slot: u32, err: ERROR } {
