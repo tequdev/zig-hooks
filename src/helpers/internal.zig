@@ -221,6 +221,18 @@ test "sliceToAny with packed struct" {
     try expectEqual(value.c, true);
 }
 
+test "anyToSlice with string" {
+    const str: []const u8 = "DEADBEEF";
+    const bytes = anyToSlice(str);
+    try expectEqualSlices(u8, &[_]u8{ 0x44, 0x45, 0x41, 0x44, 0x42, 0x45, 0x45, 0x46 }, bytes);
+}
+
+test "sliceToAny with string" {
+    const str: []const u8 = "DEADBEEF";
+    const value = sliceToAny(&[_]u8{ 0x44, 0x45, 0x41, 0x44, 0x42, 0x45, 0x45, 0x46 }, []const u8);
+    try expectEqualSlices(u8, str, value);
+}
+
 test "anyToSlice with integer" {
     const int_value: u32 = 0x12345678;
     const bytes = anyToSlice(int_value);

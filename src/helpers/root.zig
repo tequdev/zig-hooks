@@ -40,6 +40,8 @@ pub const keylet_paychan = @import("keylets.zig").keylet_paychan;
 
 pub const internal = @import("internal.zig");
 
+pub const DefineState = @import("state.zig").DefineState;
+
 pub const Field = @import("txn-template.zig").Field;
 pub const FieldTransactionType = @import("txn-template.zig").FieldTransactionType;
 pub const FieldNativeAmount = @import("txn-template.zig").FieldNativeAmount;

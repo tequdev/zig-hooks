@@ -9,7 +9,12 @@ const ERROR = @import("../error.zig").ERROR;
 
 pub inline fn state(buf_out: anytype, key: []const u8) struct { len: u32, err: ERROR } {
     const buf_out_buf = anyToSlice(buf_out);
-    const len = c_state(@intFromPtr(buf_out_buf.ptr), buf_out_buf.len, @intFromPtr(key.ptr), 32);
+    const len = c_state(
+        @intFromPtr(buf_out_buf.ptr),
+        buf_out_buf.len,
+        @intFromPtr(key.ptr),
+        key.len,
+    );
     if (len < 0)
         return .{ .len = 0, .err = @enumFromInt(len) };
     return .{ .len = @intCast(len), .err = .SUCCESS };
@@ -21,7 +26,7 @@ pub inline fn state_foreign(buf_out: anytype, key: []const u8, namespace: ?*cons
         @intFromPtr(buf_out_buf.ptr),
         buf_out_buf.len,
         @intFromPtr(key.ptr),
-        32,
+        key.len,
         if (namespace != null) @intFromPtr(namespace.?.ptr) else 0,
         if (namespace != null) namespace.?.len else 0,
         if (account != null) @intFromPtr(account.?.ptr) else 0,
@@ -38,7 +43,7 @@ pub inline fn state_foreign_set(value: anytype, key: []const u8, namespace: ?*co
         @intFromPtr(value_buf.ptr),
         value_buf.len,
         @intFromPtr(key.ptr),
-        32,
+        key.len,
         if (namespace != null) @intFromPtr(namespace.?.ptr) else 0,
         if (namespace != null) namespace.?.len else 0,
         if (account != null) @intFromPtr(account.?.ptr) else 0,
@@ -51,7 +56,12 @@ pub inline fn state_foreign_set(value: anytype, key: []const u8, namespace: ?*co
 
 pub inline fn state_set(value: anytype, key: []const u8) ERROR {
     const value_buf = anyToSlice(value);
-    const len = c_state_set(@intFromPtr(value_buf.ptr), value_buf.len, @intFromPtr(key.ptr), 32);
+    const len = c_state_set(
+        @intFromPtr(value_buf.ptr),
+        value_buf.len,
+        @intFromPtr(key.ptr),
+        key.len,
+    );
     if (len < 0)
         return @enumFromInt(len);
     return .SUCCESS;
