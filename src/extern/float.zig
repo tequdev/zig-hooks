@@ -17,8 +17,8 @@ const c_float_sum = @import("c/extern.zig").float_sum;
 
 const COMPARE = @import("../keylets.zig").COMPARE;
 
-pub inline fn float_compare(float1: i64, float2: i64, mode: COMPARE) i64 {
-    return c_float_compare(float1, float2, @intFromEnum(mode));
+pub inline fn float_compare(float1: i64, float2: i64, mode: COMPARE) bool {
+    return c_float_compare(float1, float2, @intFromEnum(mode)) == 1;
 }
 
 pub inline fn float_divide(float1: i64, float2: i64) i64 {

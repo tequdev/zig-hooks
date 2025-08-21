@@ -162,7 +162,7 @@ export fn hook(hook_arg: i32) i64 {
     // float
     assert(float_one() == 6089866696204910592, 21);
     const one = float_one();
-    assert(float_compare(one, one, .EQUAL) == 1, 22);
+    assert(float_compare(one, one, .EQUAL) == true, 22);
     assert(float_divide(one, one) == one, 23);
     assert(float_int(one, 0, .default) == 1, 24);
     assert(float_invert(one) == one, 25);

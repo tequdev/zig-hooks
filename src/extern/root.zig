@@ -86,7 +86,9 @@ pub const trace = @import("./trace.zig").trace;
 pub const trace_hex = @import("./trace.zig").trace_hex;
 pub const trace_float = @import("./trace.zig").trace_float;
 pub const trace_num = @import("./trace.zig").trace_num;
+pub const trace_bool = @import("./trace.zig").trace_bool;
 pub const trace_error = @import("./trace.zig").trace_error;
+pub const trace_xfl = @import("./trace.zig").trace_xfl;
 
 // utilities
 pub const util_accid = @import("./utilities.zig").util_accid;

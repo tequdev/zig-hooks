@@ -24,8 +24,17 @@ pub inline fn trace_num(msg: []const u8, number: i64) void {
     _ = c_trace_num(@intFromPtr(msg.ptr), msg.len, number);
 }
 
+pub inline fn trace_bool(msg: []const u8, bool1: bool) void {
+    _ = c_trace_num(@intFromPtr(msg.ptr), msg.len, @intFromBool(bool1));
+}
+
 const ERROR = @import("../error.zig").ERROR;
 
 pub inline fn trace_error(msg: []const u8, err: ERROR) void {
     _ = c_trace_num(@intFromPtr(msg.ptr), msg.len, @intFromEnum(err));
+}
+
+const XFL = @import("../helpers/xfl.zig").XFL;
+pub inline fn trace_xfl(msg: []const u8, xfl: XFL) void {
+    _ = c_trace_float(@intFromPtr(msg.ptr), msg.len, xfl.value);
 }
