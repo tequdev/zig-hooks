@@ -17,19 +17,15 @@ const Field = helpers.Field;
 const FieldNativeAmount = helpers.FieldNativeAmount;
 
 const PaymentTxn = struct {
-    TransactionType: Field(.TransactionType) = Field(.TransactionType).init(.{
-        .value = .PAYMENT,
-    }),
-    Account: Field(.Account) = Field(.Account).init(.{}),
-    Destination: Field(.Destination) = Field(.Destination).init(.{}),
-    Amount: FieldNativeAmount(.Amount) = FieldNativeAmount(.Amount).init(.{
-        .value = 1,
-    }),
-    Fee: Field(.Fee) = Field(.Fee).init(.{}),
-    SigningPubKey: Field(.SigningPubKey) = Field(.SigningPubKey).init(.{}),
-    Sequence: Field(.Sequence) = Field(.Sequence).init(.{}),
-    LastLedgerSequence: Field(.LastLedgerSequence) = Field(.LastLedgerSequence).init(.{}),
-    FirstLedgerSequence: Field(.FirstLedgerSequence) = Field(.FirstLedgerSequence).init(.{}),
+    TransactionType: Field(.TransactionType) = .init(.{ .value = .PAYMENT }),
+    Account: Field(.Account) = .init(.{}),
+    Destination: Field(.Destination) = .init(.{}),
+    Amount: FieldNativeAmount(.Amount) = .init(.{ .value = 1 }),
+    Fee: Field(.Fee) = .init(.{}),
+    SigningPubKey: Field(.SigningPubKey) = .init(.{}),
+    Sequence: Field(.Sequence) = .init(.{}),
+    LastLedgerSequence: Field(.LastLedgerSequence) = .init(.{}),
+    FirstLedgerSequence: Field(.FirstLedgerSequence) = .init(.{}),
     EmitDetails: [helpers.EmitDetailsSize]u8 = undefined,
 };
 var txn = PaymentTxn{};
