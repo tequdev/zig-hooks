@@ -90,11 +90,7 @@ pub inline fn anyToSlice(value: anytype) []const u8 {
             }
         },
         .@"struct" => {
-            if (type_info.@"struct".layout == .@"packed") {
-                return std.mem.asBytes(&value);
-            } else {
-                @compileError("only packed structs are supported");
-            }
+            return std.mem.asBytes(&value);
         },
         .array => {
             return std.mem.asBytes(&value);
@@ -206,6 +202,20 @@ test "anyToSlice with packed struct" {
     const bytes = anyToSlice(packed_data);
     // Little endian
     try expectEqualSlices(u8, &[_]u8{ 0x34, 0x12, 0x56, 0x01 }, bytes);
+}
+
+test "anyToSlice with extern struct" {
+    const ExternStruct = extern struct {
+        a: u16 = 0x1234,
+        b: u8 = 0x56,
+        c: bool = true,
+        d: [2]u8 = .{ 0x78, 0x90 },
+    };
+
+    const extern_data = ExternStruct{};
+    const bytes = anyToSlice(extern_data);
+    // Little endian
+    try expectEqualSlices(u8, &[_]u8{ 0x34, 0x12, 0x56, 0x01, 0x78, 0x90 }, bytes);
 }
 
 test "sliceToAny with packed struct" {

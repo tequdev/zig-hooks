@@ -39,8 +39,10 @@ pub const keylet_nft_offer = @import("keylets.zig").keylet_nft_offer;
 pub const keylet_paychan = @import("keylets.zig").keylet_paychan;
 
 pub const internal = @import("internal.zig");
+const state = @import("state.zig");
 
-pub const DefineState = @import("state.zig").DefineState;
+pub const DefineState = state.DefineState;
+pub const PackedStruct = state.PackedStruct;
 
 pub const Field = @import("txn-template.zig").Field;
 pub const FieldTransactionType = @import("txn-template.zig").FieldTransactionType;
