@@ -6,5 +6,5 @@ pub const api = @import("extern/root.zig");
 pub const helpers = @import("helpers/root.zig");
 
 test {
-    @import("std").testing.refAllDecls(@This());
+    @import("std").testing.refAllDeclsRecursive(@This());
 }

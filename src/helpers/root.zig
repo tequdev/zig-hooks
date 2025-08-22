@@ -51,12 +51,5 @@ pub const EmitDetailsSize = @import("txn-template.zig").EmitDetailsSize;
 pub const EmitDetailsSizeWithCallback = @import("txn-template.zig").EmitDetailsSizeWithCallback;
 
 test {
-    @import("std").testing.refAllDecls(@This());
-
-    _ = @import("buffer.zig");
-    _ = @import("internal.zig");
-    _ = @import("keylets.zig");
-    _ = @import("macro.zig");
-    _ = @import("txn-template.zig");
-    _ = @import("xfl.zig");
+    @import("std").testing.refAllDeclsRecursive(@This());
 }
