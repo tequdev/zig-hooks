@@ -13,6 +13,8 @@ const buffer_equals = internal.buffer_equals;
 const FieldCode = @import("../sfcode.zig").FieldCode;
 const TransactionType = @import("../tts.zig").TransactionType;
 
+const toBigEndian = @import("std").mem.nativeToBig;
+
 pub const EmitDetailsSize = 138 - 22;
 pub const EmitDetailsSizeWithCallback = 138;
 
@@ -116,31 +118,17 @@ fn calculateFieldIDValue(field_code: FieldCode) [calculateFieldIdLength(field_co
     return [1]u8{ft.type_code << 4 | ft.field_code};
 }
 
-// Common mixin for shared functionality
-fn FieldCommon(comptime sfcode: FieldCode) type {
-    return struct {
-        pub fn getFieldId() [calculateFieldIdLength(sfcode)]u8 {
-            return calculateFieldIDValue(sfcode);
-        }
-
-        pub fn getFieldIdLength() comptime_int {
-            return calculateFieldIdLength(sfcode);
-        }
-    };
-}
-
 // STI_UINT16 struct
 fn FieldUint16(comptime sfcode: FieldCode) type {
     return struct {
         const Self = @This();
-        usingnamespace FieldCommon(sfcode);
 
         field: [calculateFieldIdLength(sfcode)]u8 = calculateFieldIDValue(sfcode),
         value: [2]u8 = undefined,
 
         pub fn init(comptime args: struct { value: u16 = undefined }) Self {
             var result = Self{};
-            result.value = anyToSliceComptime(args.value);
+            result.value = anyToSliceComptime(toBigEndian(u16, args.value));
             return result;
         }
     };
@@ -149,14 +137,13 @@ fn FieldUint16(comptime sfcode: FieldCode) type {
 pub fn FieldTransactionType() type {
     return struct {
         const Self = @This();
-        usingnamespace FieldCommon(.TransactionType);
 
         field: [calculateFieldIdLength(.TransactionType)]u8 = calculateFieldIDValue(.TransactionType),
         value: [2]u8 = undefined,
 
         pub fn init(comptime args: struct { value: TransactionType }) Self {
             var result = Self{};
-            result.value = anyToSliceComptime(helpers.flip_endian(@intFromEnum(args.value)));
+            result.value = anyToSliceComptime(toBigEndian(u16, @intFromEnum(args.value)));
             return result;
         }
     };
@@ -166,14 +153,13 @@ pub fn FieldTransactionType() type {
 fn FieldUint32(comptime sfcode: FieldCode) type {
     return struct {
         const Self = @This();
-        usingnamespace FieldCommon(sfcode);
 
         field: [calculateFieldIdLength(sfcode)]u8 = calculateFieldIDValue(sfcode),
         value: [4]u8 = undefined,
 
         pub fn init(comptime args: struct { value: u32 = undefined }) Self {
             var result = Self{};
-            result.value = anyToSliceComptime(args.value);
+            result.value = anyToSliceComptime(toBigEndian(u32, args.value));
             return result;
         }
     };
@@ -183,14 +169,13 @@ fn FieldUint32(comptime sfcode: FieldCode) type {
 fn FieldUint64(comptime sfcode: FieldCode) type {
     return struct {
         const Self = @This();
-        usingnamespace FieldCommon(sfcode);
 
         field: [calculateFieldIdLength(sfcode)]u8 = calculateFieldIDValue(sfcode),
         value: [8]u8 = undefined,
 
         pub fn init(comptime args: struct { value: u64 = undefined }) Self {
             var result = Self{};
-            result.value = anyToSliceComptime(args.value);
+            result.value = anyToSliceComptime(toBigEndian(u64, args.value));
             return result;
         }
     };
@@ -200,7 +185,6 @@ fn FieldUint64(comptime sfcode: FieldCode) type {
 fn FieldUint128(comptime sfcode: FieldCode) type {
     return struct {
         const Self = @This();
-        usingnamespace FieldCommon(sfcode);
 
         field: [calculateFieldIdLength(sfcode)]u8 = calculateFieldIDValue(sfcode),
         value: [16]u8 = undefined,
@@ -217,7 +201,6 @@ fn FieldUint128(comptime sfcode: FieldCode) type {
 fn FieldUint256(comptime sfcode: FieldCode) type {
     return struct {
         const Self = @This();
-        usingnamespace FieldCommon(sfcode);
 
         field: [calculateFieldIdLength(sfcode)]u8 = calculateFieldIDValue(sfcode),
         value: [32]u8 = undefined,
@@ -234,7 +217,6 @@ fn FieldUint256(comptime sfcode: FieldCode) type {
 pub fn FieldAmount(comptime sfcode: FieldCode) type {
     return struct {
         const Self = @This();
-        usingnamespace FieldCommon(sfcode);
 
         field: [calculateFieldIdLength(sfcode)]u8 = calculateFieldIDValue(sfcode),
         value: [48]u8 = undefined,
@@ -270,7 +252,6 @@ pub fn FieldAmount(comptime sfcode: FieldCode) type {
 pub fn FieldNativeAmount(comptime sfcode: FieldCode) type {
     return struct {
         const Self = @This();
-        usingnamespace FieldCommon(sfcode);
 
         field: [calculateFieldIdLength(sfcode)]u8 = calculateFieldIDValue(sfcode),
         value: [8]u8 = undefined,
@@ -287,7 +268,6 @@ pub fn FieldNativeAmount(comptime sfcode: FieldCode) type {
 fn FieldVL(comptime sfcode: FieldCode, comptime length: u8) type {
     return struct {
         const Self = @This();
-        usingnamespace FieldCommon(sfcode);
 
         field: [calculateFieldIdLength(sfcode)]u8 = calculateFieldIDValue(sfcode),
         length: [1]u8 = [1]u8{length},
@@ -305,7 +285,6 @@ fn FieldVL(comptime sfcode: FieldCode, comptime length: u8) type {
 fn FieldAccount(comptime sfcode: FieldCode) type {
     return struct {
         const Self = @This();
-        usingnamespace FieldCommon(sfcode);
 
         field: [calculateFieldIdLength(sfcode)]u8 = calculateFieldIDValue(sfcode),
         length: [1]u8 = [1]u8{0x14},
@@ -360,9 +339,12 @@ const testing = std.testing;
 const anyToSlice = helpers.anyToSlice;
 test "TransactionTemplate" {
     const PaymentTxn = struct {
-        TransactionType: Field(.TransactionType) = Field(.TransactionType).init(.{ .value = .PAYMENT }),
+        TransactionType: FieldTransactionType() = FieldTransactionType().init(.{ .value = .ESCROW_CREATE }),
         Account: Field(.Account) = Field(.Account).init(.{
             .value = [_]u8{0x11} ** 20,
+        }),
+        Sequence: Field(.Sequence) = Field(.Sequence).init(.{
+            .value = 0x12345678,
         }),
         Destination: Field(.Destination) = Field(.Destination).init(.{
             .value = [_]u8{0x22} ** 20,
@@ -372,8 +354,9 @@ test "TransactionTemplate" {
         }),
     };
     const txn = PaymentTxn{};
-    try testing.expectEqual(txn.TransactionType.value, [_]u8{ 0x00, 0x00 });
+    try testing.expectEqual(txn.TransactionType.value, [_]u8{ 0x00, 0x01 });
     try testing.expectEqual(txn.Account.value, [_]u8{0x11} ** 20);
+    try testing.expectEqual(txn.Sequence.value, [_]u8{ 0x12, 0x34, 0x56, 0x78 });
     try testing.expectEqual(txn.Destination.value, [_]u8{0x22} ** 20);
     try testing.expectEqualSlices(u8, txn.Amount.value[0..8], &[_]u8{ 0x40, 0x00, 0x00, 0x00, 0x12, 0x34, 0x56, 0x78 });
     try testing.expectEqualSlices(u8, txn.Amount.value[8..28], &[_]u8{0x99} ** 20);
