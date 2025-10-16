@@ -30,9 +30,11 @@ pub fn build(b: *std.Build) void {
 
         var example = b.addExecutable(.{
             .name = ex_name,
-            .root_source_file = b.path(ex_src),
-            .target = target,
-            .optimize = .ReleaseSmall,
+            .root_module = b.createModule(.{
+                .root_source_file = b.path(ex_src),
+                .target = target,
+                .optimize = .ReleaseSmall,
+            }),
         });
 
         example.root_module.addImport("zighooks", zighooks);
