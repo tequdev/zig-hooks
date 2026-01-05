@@ -2,6 +2,9 @@
 pub const assert = @import("macro.zig").assert;
 pub const require = @import("macro.zig").require;
 
+// address
+pub const accountIdFromRAddress = @import("address.zig").accountIdFromRAddress;
+
 // xfl
 pub const XFL = @import("xfl.zig").XFL;
 

@@ -82,6 +82,7 @@ const util_sha512h = api.util_sha512h;
 const util_verify = api.util_verify;
 
 const assert = helpers.assert;
+const accountIdFromRAddress = helpers.accountIdFromRAddress;
 
 const Field = helpers.Field;
 const FieldTransactionType = helpers.FieldTransactionType;
@@ -136,6 +137,18 @@ const pubkey_ed = [_] u8{
 // zig fmt: on
 
 export fn hook(hook_arg: i32) i64 {
+    {
+        // helper functions
+        const account_id = accountIdFromRAddress("rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh");
+        var account_id_2: [20]u8 = undefined;
+        _ = util_accid(&account_id_2, "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh");
+
+        for (0..19) |i| {
+            _g(@src().line, 20);
+            assert(account_id[i] == account_id_2[i], 0);
+        }
+    }
+
     var hook_acc: [20]u8 = undefined;
     _ = hook_account(&hook_acc);
     _ = hook_account(&txn.Account.value);
