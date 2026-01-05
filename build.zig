@@ -23,6 +23,7 @@ pub fn build(b: *std.Build) void {
     const test_cmd = b.addSystemCommand(&.{
         "zig",
         "test",
+        "-OReleaseFast",
         "src/hookapi.zig",
     });
 
