@@ -141,7 +141,7 @@ export fn hook(hook_arg: i32) i64 {
     _ = hook_account(&txn.Account.value);
     const currency = [3]u8{ 'U', 'S', 'D' };
     // control
-    _g(1);
+    _g(1, 1);
     var buf: [32]u8 = undefined;
     var buf2: [200]u8 = undefined;
     // ledger

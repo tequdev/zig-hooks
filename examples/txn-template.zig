@@ -31,7 +31,7 @@ const PaymentTxn = struct {
 var txn = PaymentTxn{};
 
 export fn hook(_: i32) i64 {
-    _g(1);
+    _g(1, 1);
     _ = etxn_reserve(1);
 
     // Account

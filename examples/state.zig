@@ -23,7 +23,7 @@ const StateValueType = PackedStruct(struct {
 const SampleState = DefineState(StateKeyType, StateValueType);
 
 export fn hook(_: i32) i64 {
-    _g(1);
+    _g(1, 1);
 
     // set state
     var state_data = SampleState.init("DEADBEEF");

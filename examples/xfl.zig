@@ -3,7 +3,7 @@ const helpers = @import("zighooks").helpers;
 const XFL = helpers.XFL;
 
 export fn hook(_: i32) i64 {
-    api._g(1);
+    api._g(1, 1);
 
     const xfl1 = XFL{ .value = api.float_one() };
 

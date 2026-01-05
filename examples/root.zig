@@ -7,7 +7,7 @@ export fn hook(_: u32) i64 {
 
     const trace_msg = "Trace Message";
 
-    for (0..20) |index| {
+    for (0..19) |index| {
         _ = _g(3, 20);
         _ = trace_num(@intFromPtr(trace_msg.ptr), trace_msg.len, index);
     }
