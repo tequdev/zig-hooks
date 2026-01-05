@@ -1,31 +1,17 @@
-const api = @import("zighooks").api;
-const helpers = @import("zighooks").helpers;
-const _g = api._g;
-const accept = api.accept;
-const trace = api.trace;
-const trace_num = api.trace_num;
-const hook_account = api.hook_account;
-const otxn_field = api.otxn_field;
+pub extern fn _g(guard_id: u32, maxiter: u32) i32;
+pub extern fn trace_num(mread_ptr: u32, mread_len: u32, number: i64) i64;
+pub extern fn accept(read_ptr: u32, read_len: u32, error_code: i64) i64;
 
-export fn cbak(_: i32) i64 {
-    _g(1);
-    return accept("cbak", 0);
-}
+export fn hook(_: u32) i64 {
+    _ = _g(1, 1);
 
-export fn hook(_: i32) i64 {
-    _g(1);
+    const trace_msg = "Trace Message";
 
-    var hook_acc: [20]u8 = undefined;
-    _ = hook_account(&hook_acc);
-    trace("Hook Account", &hook_acc, .as_hex);
-
-    var otxn_account: [20]u8 = undefined;
-    _ = otxn_field(&otxn_account, .Account);
-    trace("Otxn Account", &otxn_account, .as_hex);
-
-    if (helpers.buffer_equals(20, &otxn_account, &hook_acc)) {
-        return accept("Outgoing Hook!", 0);
+    for (0..20) |index| {
+        _ = _g(3, 20);
+        _ = trace_num(@intFromPtr(trace_msg.ptr), trace_msg.len, index);
     }
 
-    return accept("Incoming Hook!", 0);
+    const msg = "Hello, Zig!";
+    return accept(@intFromPtr(msg.ptr), msg.len, 0);
 }
